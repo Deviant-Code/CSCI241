@@ -37,6 +37,7 @@ public class BinarySearchTree {
 			this.left = null;
 			this.right = null;
 			this.parent = parent;
+         this.height = 1;
 		}
 	}
 	
@@ -59,15 +60,20 @@ public class BinarySearchTree {
 		
 			// found the word already in the tree, increment its count
 			if (curr.data.compareToIgnoreCase(word) == 0) {
+         
 				curr.count++;
 				return tree;
 			}
 			
 			// look for the word in either left or right subtree
-			if (word.compareToIgnoreCase(curr.data) < 0)
+         //*Added increment to height when dropping to root.
+			if (word.compareToIgnoreCase(curr.data) < 0){
+            curr.height++;
 				curr = curr.left;
-			else
+			} else {
+            curr.height++;
 				curr = curr.right;
+         }
 		}
 		
 		// this word is not in the tree so create a new tree node
@@ -93,8 +99,43 @@ public class BinarySearchTree {
 
 	// public wrapper for dump method
 	public void dump() {	
-		System.out.println("dump() is not yet implemented");
-	}
+      TreeNode curr = root;
+      helpDump(curr);
+   }
+   
+   private void helpDump(TreeNode curr){
+      while(curr != null){
+         System.out.println(curr.data+" ,"+curr.count+" ,"+getParent(curr)+" ,"+getLeftChild(curr)+" ,"+getRightChild(curr)+" ,"+curr.height);
+         helpDump(curr.left);
+         helpDump(curr.right);
+      }
+   }
+   
+   //Provides parent node for dump and if null returns *
+   private String getParent(TreeNode curr){
+      if(curr.parent == null){
+         return "*";
+      } else {
+         return curr.parent.data;
+      }
+   }
+   
+   private String getLeftChild(TreeNode curr){
+      if(curr.left == null){
+         return "*";
+      }else {
+         return curr.left.data;
+      }
+   
+   }
+   
+   private String getRightChild(TreeNode curr){
+      if(curr.right == null){
+         return "*";
+      }else {
+         return curr.right.data;
+      }
+   }
 
 	// test the BinarySearchTree
 	public static void main(String[] args) {
