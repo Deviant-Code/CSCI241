@@ -84,11 +84,97 @@ public class BinarySearchTree {
 			parent.right = newnode;
 			
       fixHeight(newnode);
+      tree = checkAvlBalance(newnode);
+      
 		return tree;
 	}
+   
+   private TreeNode checkAvlBalance(TreeNode curr){
+      
+      if(curr != null && (curr.left != null && curr.right != null)){
+         //check if there is a off balance factor between child nodes
+         if(curr.left == null){
+            if(curr.right.height > 1){
+               curr =  rebalance(curr);
+            }
+         } else if(curr.right == null){
+            if(curr.left.height > 1){
+               curr = rebalance(curr);
+            }
+         } else if((curr.left.height - curr.right.height) > 1 | (curr.left.height - curr.right.height) < -1){
+            curr = rebalance(curr); 
+         } else {   
+            checkAvlBalance(curr.parent);
+         }
+      }
+     return getRoot(curr);
+   }
+   
+   //returns the root of a tree given any TreeNode in that tree
+   private TreeNode getRoot(TreeNode curr){
+      while(curr.parent != null){
+         curr = curr.parent;
+      }
+      return curr;
+   
+   }
+   private TreeNode rebalance(TreeNode curr){
+      if(curr.left.height < curr.right.height){
+         TreeNode yChild = curr.right;
+         if(yChild.left.height < yChild.right.height){
+            TreeNode xChild = yChild.right;
+            //rightright case
+            return leftRotate(yChild, curr);
+         } else { 
+            TreeNode xChild = yChild.left;
+            //RightLeft case
+            rightRotate(yChild, curr);
+            return leftRotate(yChild, curr);
+         }
+      } else {
+         TreeNode yChild = curr.left;
+         if(yChild.left.height < yChild.right.height){
+            TreeNode xChild = yChild.right;
+            //LeftRight Case
+            leftRotate(yChild, curr);
+            return rightRotate(yChild, curr);
+         } else {
+            TreeNode xChild = yChild.left;
+            //LeftLeft case
+            return rightRotate(yChild, curr);
+         }
+      }
+   }
+   
+   private TreeNode rightRotate(TreeNode yChild, TreeNode curr){
+      curr.left = yChild.right;
+      yChild.right = curr;
+      yChild.parent = curr.parent;
+      curr.parent = yChild;
+      if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
+         yChild.parent.left = yChild;
+      } else {
+         yChild.parent.right = yChild;
+      }
+      return yChild;
+   }
+   
+   private TreeNode leftRotate(TreeNode yChild, TreeNode curr){
+      curr.right = yChild.left;
+      yChild.left = curr;
+      yChild.parent = curr.parent;
+      curr.parent = yChild;
+      if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
+         yChild.parent.left = yChild;
+      } else {
+         yChild.parent.right = yChild;
+      }
+      return yChild;
+   
+   }
 	
    //fixes height of parent nodes after an insert of new node
-   public void fixHeight(TreeNode curr){
+   private void fixHeight(TreeNode curr){
       if(curr.parent != null){
          if(curr.height == curr.parent.height){
             curr.parent.height++;
@@ -110,8 +196,7 @@ public class BinarySearchTree {
 	}
    
    
- 
-   
+   //Checks if word exists in tree.
    private boolean exist(TreeNode curr, String word){
       boolean exist = false;
       if(curr != null){
@@ -131,12 +216,7 @@ public class BinarySearchTree {
       helpDump(curr);
 	}
    
-  /* private boolean checkAvlBalance(TreeNode root){
-      TreeNode curr = root;
-     
-   
-   }
-   */
+   //helper method for dump, prints data for each treeNode
    private void helpDump(TreeNode curr){
       if(curr != null){
          System.out.println(curr.data+" ,"+curr.count+" ,"+getParent(curr)+" ,"+getLeftChild(curr)+" ,"+getRightChild(curr)+" ,"+curr.height);
