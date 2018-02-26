@@ -27,6 +27,8 @@ public class BinarySearchTree {
 		TreeNode left;
 		TreeNode right;
 		TreeNode parent;
+      //**Added int height
+      int height;
 
 		// Constructor
 		public TreeNode(String data, TreeNode parent) {
@@ -35,6 +37,7 @@ public class BinarySearchTree {
 			this.left = null;
 			this.right = null;
 			this.parent = parent;
+         this.height = 1;
 		}
 	}
 	
@@ -49,10 +52,9 @@ public class BinarySearchTree {
 	
 		TreeNode parent = null;
 		TreeNode curr = tree;
-		
 		// find location for this word in the tree
 		while (curr != null) {
-		
+		   
 			parent = curr;
 		
 			// found the word already in the tree, increment its count
@@ -62,14 +64,18 @@ public class BinarySearchTree {
 			}
 			
 			// look for the word in either left or right subtree
-			if (word.compareToIgnoreCase(curr.data) < 0)
+         //*Added increment to height when dropping to root.
+			if (word.compareToIgnoreCase(curr.data) < 0){
 				curr = curr.left;
-			else
+			} else {
 				curr = curr.right;
+         }
 		}
 		
 		// this word is not in the tree so create a new tree node
 		TreeNode newnode = new TreeNode(word, parent);
+      // cannot
+      newnode.height = 0;
 		
 		// added to an empty tree
 		if (parent == null)
@@ -87,12 +93,107 @@ public class BinarySearchTree {
 	// public wrapper method for word insertion or count increment
 	public void insert(String word) {
 		root = insert(root, word);
+      root.height = treeHeight(root, 1);
+      findNodeHeight(root);
+      if(balanceFactor(root) > 1){
+         root = rebalance(root);
+      }
 	}
 
 	// public wrapper for dump method
 	public void dump() {	
-		System.out.println("dump() is not yet implemented");
-	}
+      TreeNode curr = root;
+      helpDump(curr);
+   }
+   
+   
+   private int treeHeight(TreeNode curr, int height){
+      
+      if (curr.left == null && curr.right == null){
+         return height;
+      } else{
+      
+         if (curr.left == null && curr.right != null){
+            return treeHeight(curr.right, height + 1);
+         } else if (curr.left != null && curr.right == null){
+            return treeHeight(curr.left, height + 1);
+         } else{
+            int leftPath = treeHeight(curr.left, height + 1);
+            int rightPath = treeHeight(curr.right, height + 1);
+            
+            if(rightPath> leftPath){
+               return rightPath;
+            } else { 
+               return leftPath;
+            }  
+         } 
+      }
+   
+   }
+   
+   
+   //Works with helper method to calculate height of all nodes in tree
+   private void findNodeHeight(TreeNode root){
+      helpNodeHeight(root, root.height+1);
+   }
+   
+   //Calculates heights of all nodes in tree bby preorder traversal
+   private void helpNodeHeight(TreeNode curr, int height){
+      if(curr != null){
+         curr.height = height - 1; 
+         helpNodeHeight(curr.left, height -1);
+         helpNodeHeight(curr.right, height -1);
+      }
+   
+   }
+   
+   //returns balance factor from left and right subtrees of root
+   private int balanceFactor(TreeNode root){
+      return 0;
+   
+   }
+   
+   private TreeNode rebalance(TreeNode root){
+     
+      return root;
+   }
+   
+   //helper method for dump
+   private void helpDump(TreeNode curr){
+      if(curr != null){
+         System.out.println(curr.data+" ,"+curr.count+" ,"+getParent(curr)+" ,"+getLeftChild(curr)+" ,"+getRightChild(curr)+" ,"+curr.height);
+         helpDump(curr.left);
+         helpDump(curr.right);
+      }
+   }
+   
+   //Provides parent node for dump and if null returns *
+   private String getParent(TreeNode curr){
+      if(curr.parent == null){
+         return "*";
+      } else {
+         return curr.parent.data;
+      }
+   }
+   
+   //Returns left child of node or * if null
+   private String getLeftChild(TreeNode curr){
+      if(curr.left == null){
+         return "*";
+      }else {
+         return curr.left.data;
+      }
+   
+   }
+   
+   //Returns right child of node or * if null
+   private String getRightChild(TreeNode curr){
+      if(curr.right == null){
+         return "*";
+      }else {
+         return curr.right.data;
+      }
+   }
 
 	// test the BinarySearchTree
 	public static void main(String[] args) {

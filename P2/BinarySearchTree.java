@@ -27,8 +27,7 @@ public class BinarySearchTree {
 		TreeNode left;
 		TreeNode right;
 		TreeNode parent;
-      //**Added int height
-      int height;
+      int height; //holds the height of each node
 
 		// Constructor
 		public TreeNode(String data, TreeNode parent) {
@@ -37,7 +36,7 @@ public class BinarySearchTree {
 			this.left = null;
 			this.right = null;
 			this.parent = parent;
-         this.height = 1;
+         this.height = 1; // initializing height to 1
 		}
 	}
 	
@@ -52,9 +51,10 @@ public class BinarySearchTree {
 	
 		TreeNode parent = null;
 		TreeNode curr = tree;
+		
 		// find location for this word in the tree
 		while (curr != null) {
-		   
+		
 			parent = curr;
 		
 			// found the word already in the tree, increment its count
@@ -64,18 +64,14 @@ public class BinarySearchTree {
 			}
 			
 			// look for the word in either left or right subtree
-         //*Added increment to height when dropping to root.
-			if (word.compareToIgnoreCase(curr.data) < 0){
+			if (word.compareToIgnoreCase(curr.data) < 0)
 				curr = curr.left;
-			} else {
+			else
 				curr = curr.right;
-         }
 		}
 		
 		// this word is not in the tree so create a new tree node
 		TreeNode newnode = new TreeNode(word, parent);
-      // cannot
-      newnode.height = 0;
 		
 		// added to an empty tree
 		if (parent == null)
@@ -90,75 +86,81 @@ public class BinarySearchTree {
 		return tree;
 	}
 	
+   
+   private TreeNode insertNew(TreeNode tree, String word) {
+	
+      TreeNode parent = null;
+		TreeNode curr = tree;
+		
+		// find location for this word in the tree
+		while (curr != null) {
+		
+			parent = curr;
+			
+			// look for the word in either left or right subtree
+			if (word.compareToIgnoreCase(curr.data) < 0){
+            curr.height++;
+				curr = curr.left;
+         } else {
+            curr.height++;
+				curr = curr.right;
+         }
+		}
+		
+		// this word is not in the tree so create a new tree node
+		TreeNode newnode = new TreeNode(word, parent);
+		
+		// added to an empty tree
+		if (parent == null)
+			return newnode;
+		
+		// set the parent's left or right to the new node
+		if (word.compareToIgnoreCase(parent.data) < 0)
+			parent.left = newnode;
+		else
+			parent.right = newnode;
+			
+		return tree;
+	}
+
 	// public wrapper method for word insertion or count increment
 	public void insert(String word) {
-		root = insert(root, word);
-      root.height = treeHeight(root, 1);
-      findNodeHeight(root);
-      if(balanceFactor(root) > 1){
-         root = rebalance(root);
+      if(exist(root, word)){
+         //System.out.println("This word exists");
+         root = insert(root, word);
+      } else {
+		   root = insertNew(root, word);
       }
+      
 	}
+   
+   //checks if height of left / right subtree differs > 1 and rebalances.
+   
+   private boolean exist(TreeNode curr, String word){
+      boolean exist = false;
+      if(curr != null){
+         if(curr.data.equalsIgnoreCase(word)){
+            return true;
+         } 
+         return (exist(curr.left, word) | exist(curr.right, word));   
+      } 
+      return exist;
+   
+   }
+   
 
 	// public wrapper for dump method
 	public void dump() {	
-      TreeNode curr = root;
+		TreeNode curr = root;
       helpDump(curr);
-   }
+	}
    
-   
-   private int treeHeight(TreeNode curr, int height){
-      
-      if (curr.left == null && curr.right == null){
-         return height;
-      } else{
-      
-         if (curr.left == null && curr.right != null){
-            return treeHeight(curr.right, height + 1);
-         } else if (curr.left != null && curr.right == null){
-            return treeHeight(curr.left, height + 1);
-         } else{
-            int leftPath = treeHeight(curr.left, height + 1);
-            int rightPath = treeHeight(curr.right, height + 1);
-            
-            if(rightPath> leftPath){
-               return rightPath;
-            } else { 
-               return leftPath;
-            }  
-         } 
-      }
-   
-   }
-   
-   //Works with helper method to calculate height of all nodes in tree
-   private void findNodeHeight(TreeNode root){
-      helpNodeHeight(root, root.height+1);
-   
-   }
-   
-   //Calculates heights of all nodes in tree bby preorder traversal
-   private void helpNodeHeight(TreeNode curr, int height){
-      if(curr != null){
-         curr.height = height - 1; 
-         helpNodeHeight(curr.left, height -1);
-         helpNodeHeight(curr.right, height -1);
-      }
-   
-   }
-   
-   //returns balance factor from left and right subtrees of root
-   private int balanceFactor(TreeNode root){
-      return 0;
-   
-   }
-   
-   private TreeNode rebalance(TreeNode root){
+  /* private boolean checkAvlBalance(TreeNode root){
+      TreeNode curr = root;
      
-      return root;
-   }
    
-   //helper method for dump
+   }
+   */
    private void helpDump(TreeNode curr){
       if(curr != null){
          System.out.println(curr.data+" ,"+curr.count+" ,"+getParent(curr)+" ,"+getLeftChild(curr)+" ,"+getRightChild(curr)+" ,"+curr.height);
@@ -194,6 +196,7 @@ public class BinarySearchTree {
          return curr.right.data;
       }
    }
+
 
 	// test the BinarySearchTree
 	public static void main(String[] args) {
