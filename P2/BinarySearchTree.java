@@ -83,58 +83,34 @@ public class BinarySearchTree {
 		else
 			parent.right = newnode;
 			
+      fixHeight(newnode);
 		return tree;
 	}
 	
-   
-   private TreeNode insertNew(TreeNode tree, String word) {
-	
-      TreeNode parent = null;
-		TreeNode curr = tree;
-		
-		// find location for this word in the tree
-		while (curr != null) {
-		
-			parent = curr;
-			
-			// look for the word in either left or right subtree
-			if (word.compareToIgnoreCase(curr.data) < 0){
-            curr.height++;
-				curr = curr.left;
-         } else {
-            curr.height++;
-				curr = curr.right;
+   //fixes height of parent nodes after an insert of new node
+   public void fixHeight(TreeNode curr){
+      if(curr.parent != null){
+         if(curr.height == curr.parent.height){
+            curr.parent.height++;
+            fixHeight(curr.parent);
          }
-		}
-		
-		// this word is not in the tree so create a new tree node
-		TreeNode newnode = new TreeNode(word, parent);
-		
-		// added to an empty tree
-		if (parent == null)
-			return newnode;
-		
-		// set the parent's left or right to the new node
-		if (word.compareToIgnoreCase(parent.data) < 0)
-			parent.left = newnode;
-		else
-			parent.right = newnode;
-			
-		return tree;
-	}
-
+      }
+   }
+  
 	// public wrapper method for word insertion or count increment
 	public void insert(String word) {
       if(exist(root, word)){
          //System.out.println("This word exists");
          root = insert(root, word);
       } else {
-		   root = insertNew(root, word);
+		   root = insert(root, word);
+         //root = rebalance(root);
       }
       
 	}
    
-   //checks if height of left / right subtree differs > 1 and rebalances.
+   
+ 
    
    private boolean exist(TreeNode curr, String word){
       boolean exist = false;
