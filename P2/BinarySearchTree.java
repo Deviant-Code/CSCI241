@@ -90,24 +90,44 @@ public class BinarySearchTree {
 	}
    
    private TreeNode checkAvlBalance(TreeNode curr){
-      
-      if(curr != null && (curr.left != null && curr.right != null)){
+   
+      if(curr != null){
+         System.out.println("CAB called not null");
          //check if there is a off balance factor between child nodes
-         if(curr.left == null){
+         
+         if(curr.left == null && curr.right == null){
+            checkAvlBalance(curr.parent);
+         }else if(curr.left == null){
             if(curr.right.height > 1){
                curr =  rebalance(curr);
+            } else {
+               if(curr.parent != null){
+                  checkAvlBalance(curr.parent);
+               }
             }
          } else if(curr.right == null){
+            System.out.println("right call" + curr.data + curr.height + curr.left.height);
+            
             if(curr.left.height > 1){
+               System.out.println("Left height was greater than 1");
                curr = rebalance(curr);
+            } else {
+               if(curr.parent != null){
+                  checkAvlBalance(curr.parent);
+               }
             }
          } else if((curr.left.height - curr.right.height) > 1 | (curr.left.height - curr.right.height) < -1){
             curr = rebalance(curr); 
          } else {   
-            checkAvlBalance(curr.parent);
+            if(curr.parent != null){
+               checkAvlBalance(curr.parent);
+            }
          }
       }
-     return getRoot(curr);
+      
+     root = getRoot(curr);
+     return root;
+     
    }
    
    //returns the root of a tree given any TreeNode in that tree
@@ -119,9 +139,38 @@ public class BinarySearchTree {
    
    }
    private TreeNode rebalance(TreeNode curr){
-      if(curr.left.height < curr.right.height){
+      int leftHeight; 
+      int rightHeight;
+      
+      if(curr.left == null){
+         leftHeight = 0;
+      } else {
+         leftHeight = curr.left.height;
+      }
+      
+      if(curr.right == null){
+         rightHeight = 0;
+      } else {
+         rightHeight = curr.right.height;
+      }
+      
+      //EVALUATES A NULL CHILD AS A 0 HEIGHT FOR BOTH CHILDS OF CURR
+      if(leftHeight < rightHeight){
          TreeNode yChild = curr.right;
-         if(yChild.left.height < yChild.right.height){
+         
+         if(yChild.left == null){
+            leftHeight = 0;
+         } else {
+            leftHeight = yChild.left.height;
+         }
+         
+         if(yChild.right == null){
+            rightHeight = 0;
+         } else {
+            rightHeight = yChild.right.height;
+         }
+         
+         if(leftHeight < rightHeight){
             TreeNode xChild = yChild.right;
             //rightright case
             return leftRotate(yChild, curr);
@@ -133,7 +182,23 @@ public class BinarySearchTree {
          }
       } else {
          TreeNode yChild = curr.left;
-         if(yChild.left.height < yChild.right.height){
+         
+         //EVALUATES A NULL CHILD AS A ZERO HEIGHT
+         if(yChild.left == null){
+            leftHeight = 0;
+         } else {
+            leftHeight = yChild.left.height;
+         }
+         
+         if(yChild.right == null){
+            rightHeight = 0;
+         } else {
+            rightHeight = yChild.right.height;
+         }
+         
+         
+         
+         if(leftHeight < rightHeight){
             TreeNode xChild = yChild.right;
             //LeftRight Case
             leftRotate(yChild, curr);
@@ -147,16 +212,22 @@ public class BinarySearchTree {
    }
    
    private TreeNode rightRotate(TreeNode yChild, TreeNode curr){
+      System.out.println(yChild.data + yChild.height + yChild.left.data);
       curr.left = yChild.right;
       yChild.right = curr;
       yChild.parent = curr.parent;
+      
       curr.parent = yChild;
-      if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
-         yChild.parent.left = yChild;
-      } else {
-         yChild.parent.right = yChild;
+      if(yChild.parent != null){
+         if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
+            yChild.parent.left = yChild;
+         } else {
+            yChild.parent.right = yChild;
+         }
       }
+
       return yChild;
+      
    }
    
    private TreeNode leftRotate(TreeNode yChild, TreeNode curr){
