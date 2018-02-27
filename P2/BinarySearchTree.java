@@ -170,6 +170,7 @@ public class BinarySearchTree {
          if(leftHeight < rightHeight){
             TreeNode xChild = yChild.right;
             //rightright case
+            System.out.println("Ran RR Case: " + curr.height);
             return leftRotate(yChild, curr);
          } else { 
             TreeNode xChild = yChild.left;
@@ -224,7 +225,12 @@ public class BinarySearchTree {
       }
       
       curr.height = curr.height -2;
-
+      TreeNode recurseParent = yChild.parent;
+      while(recurseParent != null){
+         recurseParent.height--;
+         recurseParent = recurseParent.parent;
+      }
+         
       return yChild;
       
    }
@@ -243,6 +249,12 @@ public class BinarySearchTree {
       }
       
       curr.height = curr.height -2;
+      
+      TreeNode recurseParent = yChild.parent;
+      while(recurseParent != null){
+         recurseParent.height--;
+         recurseParent = recurseParent.parent;
+      }
       return yChild;
    
    }
