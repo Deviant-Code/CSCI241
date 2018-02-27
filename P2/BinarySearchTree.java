@@ -168,15 +168,12 @@ public class BinarySearchTree {
          }
          
          if(leftHeight < rightHeight){
-            TreeNode xChild = yChild.right;
             //rightright case
-            System.out.println("Ran RR Case: " + curr.height);
-            return leftRotate(yChild, curr);
+            return leftRotate(curr, yChild);
          } else { 
-            TreeNode xChild = yChild.left;
             //RightLeft case
-            rightRotate(yChild, curr);
-            return leftRotate(yChild, curr);
+            curr.right = rightRotate(yChild, yChild.left);
+            return leftRotate(curr,curr.right);
          }
       } else {
          TreeNode yChild = curr.left;
@@ -197,26 +194,67 @@ public class BinarySearchTree {
          
          
          if(leftHeight < rightHeight){
-            TreeNode xChild = yChild.right;
             //LeftRight Case
-            leftRotate(yChild, curr);
-            return rightRotate(yChild, curr);
+            curr.left = leftRotate(yChild, yChild.right);
+            return rightRotate(curr, curr.left);
          } else {
-            TreeNode xChild = yChild.left;
             //LeftLeft case
-            return rightRotate(yChild, curr);
+            return rightRotate(curr, yChild);
          }
       }
    }
    
-   private TreeNode rightRotate(TreeNode yChild, TreeNode curr){
+   private int max(int a, int b) {
+        return (a > b) ? a : b;
+    }
+    
+   private int height(TreeNode x){
+      if(x == null){
+         return 0;
+      } else { return x.height;
+      }
+   }
+   
+   private TreeNode rightRotate(TreeNode curr, TreeNode yChild){
+      yChild.parent = curr.parent;
+     
+     //sets child of Parent of shifted node to y
+     if(yChild.parent != null){
+         if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
+            yChild.parent.left = yChild;
+         } else {
+            yChild.parent.right = yChild;
+         }
+      }
+      
       curr.left = yChild.right;
+      
+      if(curr.left != null){
+         curr.left.parent = curr;
+      }
+      
+      curr.parent = yChild;
       yChild.right = curr;
-      yChild.parent = curr.parent;
       
-      curr.parent = yChild;
+      curr.height = max(height(curr.left), height(curr.right) + 1);
+      yChild.height = max(height(yChild.left), height(yChild.right) + 1);
+  
       
-      if(yChild.parent != null){
+      TreeNode recurseParent = yChild.parent;
+      while(recurseParent != null){
+         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right) + 1);
+         recurseParent = recurseParent.parent;
+      }  
+      
+      return yChild;   
+      }
+   
+   private TreeNode leftRotate(TreeNode curr, TreeNode yChild){
+
+     yChild.parent = curr.parent;
+     
+     //sets child of Parent of shifted node to y
+     if(yChild.parent != null){
          if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
             yChild.parent.left = yChild;
          } else {
@@ -224,39 +262,28 @@ public class BinarySearchTree {
          }
       }
       
-      curr.height = curr.height -2;
-      TreeNode recurseParent = yChild.parent;
-      while(recurseParent != null){
-         recurseParent.height--;
-         recurseParent = recurseParent.parent;
-      }
-         
-      return yChild;
-      
-   }
-   
-   private TreeNode leftRotate(TreeNode yChild, TreeNode curr){
       curr.right = yChild.left;
-      yChild.left = curr;
-      yChild.parent = curr.parent;
-      curr.parent = yChild;
-      if(yChild.parent != null){
-         if(yChild.data.compareToIgnoreCase(yChild.parent.data) < 0){
-            yChild.parent.left = yChild;
-         } else {
-            yChild.parent.right = yChild;
-         }
+      
+      if(curr.right != null){
+         curr.right.parent = curr;
       }
       
-      curr.height = curr.height -2;
+      curr.parent = yChild;
+      yChild.left = curr;
+      
+      //FIX HEIGHT BELOW HERE
+
+      curr.height = max(height(curr.left), height(curr.right) + 1);
+      yChild.height = max(height(yChild.left), height(yChild.right) + 1);
+      
       
       TreeNode recurseParent = yChild.parent;
       while(recurseParent != null){
-         recurseParent.height--;
+         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right) + 1);
          recurseParent = recurseParent.parent;
-      }
-      return yChild;
-   
+      }  
+      
+      return yChild; 
    }
 	
    //fixes height of parent nodes after an insert of new node
@@ -273,7 +300,6 @@ public class BinarySearchTree {
 	// public wrapper method for word insertion or count increment
 	public void insert(String word) {
       if(exist(root, word)){
-         //System.out.println("This word exists");
          root = insert(root, word);
       } else {
 		   root = insert(root, word);
@@ -306,7 +332,7 @@ public class BinarySearchTree {
    //helper method for dump, prints data for each treeNode
    private void helpDump(TreeNode curr){
       if(curr != null){
-         System.out.println(curr.data+" ,"+curr.count+" ,"+getParent(curr)+" ,"+getLeftChild(curr)+" ,"+getRightChild(curr)+" ,"+curr.height);
+         System.out.println(curr.data+", "+curr.count+", "+getParent(curr)+", "+getLeftChild(curr)+", "+getRightChild(curr)+", "+curr.height);
          helpDump(curr.left);
          helpDump(curr.right);
       }
