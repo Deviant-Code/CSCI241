@@ -85,135 +85,78 @@ public class BinarySearchTree {
 			
       fixHeight(newnode);
       tree = checkAvlBalance(newnode);
+      tree = getRoot(tree);
       
 		return tree;
 	}
-   
-   private TreeNode checkAvlBalance(TreeNode curr){
-   
-      if(curr != null){
-         //check if there is a off balance factor between child nodes  
-         if(curr.left == null && curr.right == null){
-            checkAvlBalance(curr.parent);
-         }else if(curr.left == null){
-            if(curr.right.height > 1){
-               curr =  rebalance(curr);
-            } else {
-               if(curr.parent != null){
-                  checkAvlBalance(curr.parent);
-               }
-            }
-         } else if(curr.right == null){
-                
-            if(curr.left.height > 1){
-               curr = rebalance(curr);
-            } else {
-               if(curr.parent != null){
-                  checkAvlBalance(curr.parent);
-               }
-            }
-         } else if((curr.left.height - curr.right.height) > 1 | (curr.left.height - curr.right.height) < -1){
-            curr = rebalance(curr); 
-         } else {   
-            if(curr.parent != null){
-               checkAvlBalance(curr.parent);
-            }
-         }
+  
+  //Given a newNode, checks resulting balance factor
+  private TreeNode checkAvlBalance(TreeNode curr){
+   if(curr != null){
+      //check for balance factor > 1
+      if(Math.abs(height(curr.left) - height(curr.right)) > 1){
+         curr = rebalance(curr);
       }
-     
-      
-     root = getRoot(curr);
-     return root;
-     
+      if(curr.parent != null){
+         checkAvlBalance(curr.parent);
+      }
    }
    
-   //returns the root of a tree given any TreeNode in that tree
-   private TreeNode getRoot(TreeNode curr){
+   return curr;
+         
+  }
+  
+  //Returns the height of a node--Evaluates 0 for NULL nodes
+  private int height(TreeNode x){
+     if(x == null){
+        return 0;
+     } else { return x.height;
+     }
+  }
+  
+  //Returns the Root node, given any node in a tree
+  private TreeNode getRoot(TreeNode curr){
+   if(curr.parent != null){ 
       while(curr.parent != null){
          curr = curr.parent;
       }
-      return curr;
-   
    }
+   
+   return curr;
+  }
+   
+   //Determines what case a rebalance falls under, Left-Right
+   //Left-Left, Right-Left, or Right-Right
    private TreeNode rebalance(TreeNode curr){
-      int leftHeight; 
-      int rightHeight;
-      
-      if(curr.left == null){
-         leftHeight = 0;
-      } else {
-         leftHeight = curr.left.height;
-      }
-      
-      if(curr.right == null){
-         rightHeight = 0;
-      } else {
-         rightHeight = curr.right.height;
-      }
-      
-      //EVALUATES A NULL CHILD AS A 0 HEIGHT FOR BOTH CHILDS OF CURR
-      if(leftHeight < rightHeight){
+
+      if(height(curr.left) < height(curr.right)){
          TreeNode yChild = curr.right;
-         
-         if(yChild.left == null){
-            leftHeight = 0;
-         } else {
-            leftHeight = yChild.left.height;
-         }
-         
-         if(yChild.right == null){
-            rightHeight = 0;
-         } else {
-            rightHeight = yChild.right.height;
-         }
-         
-         if(leftHeight < rightHeight){
-            //rightright case
+         if(height(yChild.left) < height(yChild.right)){
+            //Right-Right Case
             return leftRotate(curr, yChild);
          } else { 
-            //RightLeft case
+            //Right-Left Case
             curr.right = rightRotate(yChild, yChild.left);
             return leftRotate(curr,curr.right);
          }
       } else {
          TreeNode yChild = curr.left;
-         
-         //EVALUATES A NULL CHILD AS A ZERO HEIGHT
-         if(yChild.left == null){
-            leftHeight = 0;
-         } else {
-            leftHeight = yChild.left.height;
-         }
-         
-         if(yChild.right == null){
-            rightHeight = 0;
-         } else {
-            rightHeight = yChild.right.height;
-         }
-         
-         
-         
-         if(leftHeight < rightHeight){
-            //LeftRight Case
+                        
+         if(height(yChild.left) < height(yChild.right)){
+            //Left-Right Case
             curr.left = leftRotate(yChild, yChild.right);
             return rightRotate(curr, curr.left);
          } else {
-            //LeftLeft case
+            //Left-Left Case
             return rightRotate(curr, yChild);
          }
       }
    }
    
-   private int max(int a, int b) {
-        return (a > b) ? a : b;
+   //Returns the larger of two integers
+   private int max(int x, int y) {
+        return (x > y) ? x : y;
     }
-    
-   private int height(TreeNode x){
-      if(x == null){
-         return 0;
-      } else { return x.height;
-      }
-   }
    
    private TreeNode rightRotate(TreeNode curr, TreeNode yChild){
       yChild.parent = curr.parent;
@@ -250,6 +193,7 @@ public class BinarySearchTree {
       }
    
    private TreeNode leftRotate(TreeNode curr, TreeNode yChild){
+     
 
      yChild.parent = curr.parent;
      
