@@ -133,6 +133,7 @@ public class BinarySearchTree {
          TreeNode yChild = curr.right;
          if(height(yChild.left) < height(yChild.right)){
             //Right-Right Case
+            
             return leftRotate(curr, yChild);
          } else { 
             //Right-Left Case
@@ -179,13 +180,14 @@ public class BinarySearchTree {
       curr.parent = yChild;
       yChild.right = curr;
       
-      curr.height = max(height(curr.left), height(curr.right) + 1);
-      yChild.height = max(height(yChild.left), height(yChild.right) + 1);
+      curr.height = max(height(curr.left), height(curr.right)) + 1;
+      yChild.height = max(height(yChild.left), height(yChild.right)) + 1;
   
       
       TreeNode recurseParent = yChild.parent;
+
       while(recurseParent != null){
-         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right) + 1);
+         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right)) + 1;
          recurseParent = recurseParent.parent;
       }  
       
@@ -217,13 +219,12 @@ public class BinarySearchTree {
       
       //FIX HEIGHT BELOW HERE
 
-      curr.height = max(height(curr.left), height(curr.right) + 1);
-      yChild.height = max(height(yChild.left), height(yChild.right) + 1);
-      
+      curr.height = max(height(curr.left), height(curr.right)) + 1;
+      yChild.height = max(height(yChild.left), height(yChild.right)) + 1;
       
       TreeNode recurseParent = yChild.parent;
       while(recurseParent != null){
-         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right) + 1);
+         recurseParent.height = max(height(recurseParent.left), height(recurseParent.right)) + 1;
          recurseParent = recurseParent.parent;
       }  
       
