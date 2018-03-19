@@ -8,29 +8,29 @@ public class Assignment3{
    public static void main(String[] args) throws FileNotFoundException{
       
       Scanner input = new Scanner(System.in);
+      
       File dataFile = requestFile(input);
+      
       Graph townGraph = parseFileToGraph(dataFile);
-      
-      String prompt = "First town: ";
-      String origin = requestString(input,prompt,townGraph); 
-      
-      prompt = "Second town: ";
-      String destination = requestString(input,prompt,townGraph);
+      String origin = requestString(input,"First town: ",townGraph); 
+      String destination = requestString(input,"Second town: ",townGraph);
                       
       if(origin.equalsIgnoreCase(destination)){
-         System.out.println("You are already at your destination: " + destination);
+        System.out.println("You are already at your destination: " + destination);
       } else {
-         Vertex SecondTownShortestPath = townGraph.dijkstra(origin, destination);
-      }     
+        Vertex SecondTownShortestPath = townGraph.dijkstra(origin, destination);
+      } 
+      
+
    }
    
    //Requests name of town from user and checks if town is a valid vertex in graph.
    public static String requestString(Scanner input, String prompt, Graph townGraph){
       
       System.out.println(prompt);
-      
+
       String dest = input.nextLine();
-      
+     
       if(dest.equals("") || dest == null){
          System.exit(0);
       } else if(!townGraph.contains(dest)){
@@ -45,16 +45,14 @@ public class Assignment3{
    
    //Requests a valid DataFile from user-input
    public static File requestFile(Scanner input){
-      
-      File dataFile = new File("");
+      System.out.println("Input File Name: ");
+      File dataFile = new File ("");
+   //changed to next
       while(!dataFile.exists() && !dataFile.isDirectory()){
-         System.out.println("Input File Name: ");
          String filename = input.nextLine();
          dataFile = new File(filename);
       }
-      
-      return dataFile;
-   
+      return dataFile;  
    }
    
    //Parses file to create edges and vertices to create new instance of graph
